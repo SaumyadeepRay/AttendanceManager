@@ -20,6 +20,14 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   final TextEditingController employeeNameController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      BlocProvider.of<EmployeeBloc>(context).add(FetchEmployeesEvent());
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -43,39 +51,62 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
                     isActive: true,
                   );
                   BlocProvider.of<EmployeeBloc>(context).add(AddEmployeeEvent(employee));
-                }
-              },
-            ),
-            const SizedBox(height: 10),
-            ReusableButton(
-              label: 'Remove Employee',
-              color: Colors.red,
-              onPressed: () {
-                if (employeeNameController.text.isNotEmpty) {
-                  BlocProvider.of<EmployeeBloc>(context).add(RemoveEmployeeEvent(employeeNameController.text));
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Please enter an employee name')),
+                  );
                 }
               },
             ),
             const SizedBox(height: 20),
-            BlocConsumer<EmployeeBloc, EmployeeState>(
-              listener: (context, state) {
-                if (state is EmployeeAdded || state is EmployeeRemoved) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state is EmployeeAdded ? 'Employee Added Successfully!' : 'Employee Removed Successfully!')),
-                  );
-                  employeeNameController.clear();
-                } else if (state is EmployeeError) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(state.message)),
-                  );
-                }
-              },
-              builder: (context, state) {
-                if (state is EmployeeLoading) {
-                  return const CircularProgressIndicator();
-                }
-                return const SizedBox.shrink();
-              },
+            Expanded(
+              child: BlocConsumer<EmployeeBloc, EmployeeState>(
+                listener: (context, state) {
+                  if (state is EmployeeAdded) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Employee Added Successfully!')),
+                    );
+                    employeeNameController.clear();
+                    BlocProvider.of<EmployeeBloc>(context).add(FetchEmployeesEvent());
+                  } else if (state is EmployeeRemoved) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Employee Removed Successfully!')),
+                    );
+                    BlocProvider.of<EmployeeBloc>(context).add(FetchEmployeesEvent());
+                  } else if (state is EmployeeError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.message)),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  if (state is EmployeeLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is EmployeeLoaded) {
+                    if (state.employees.isEmpty) {
+                      return const Center(child: Text('No Employees Found'));
+                    }
+                    return ListView.builder(
+                      itemCount: state.employees.length,
+                      itemBuilder: (context, index) {
+                        final employee = state.employees[index];
+                        return ListTile(
+                          title: Text(employee.employeeName),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              BlocProvider.of<EmployeeBloc>(context).add(RemoveEmployeeEvent(employee.employeeName));
+                            },
+                          ),
+                        );
+                      },
+                    );
+                  } else if (state is EmployeeError) {
+                    return Center(child: Text(state.message));
+                  }
+                  return const Center(child: Text('No Employees Found'));
+                },
+              ),
             ),
           ],
         ),

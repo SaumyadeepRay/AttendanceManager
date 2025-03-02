@@ -1,6 +1,8 @@
 // API calls for employees
 
 import 'dart:convert';
+import 'package:googleapis/sheets/v4.dart';
+
 import '../../../../core/errors/failures.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/utils/app_constants.dart';
@@ -8,30 +10,28 @@ import '../models/employee_model.dart';
 
 // This class handles remote data fetching for employee records using Google Sheets API.
 class EmployeeRemoteDataSource {
-  final ApiClient apiClient; // API client to make network requests
+  final SheetsApi sheetsApi;
 
-  EmployeeRemoteDataSource({required this.apiClient});
+  EmployeeRemoteDataSource({required this.sheetsApi});
 
   // Fetch employee list from Google Sheets.
   Future<List<EmployeeModel>> fetchEmployees() async {
     try {
-      // Construct API URL to fetch employee data.
-      final url = '${AppConstants.googleSheetApiBaseUrl}/${AppConstants.spreadsheetId}/values/${AppConstants.employeeSheetName}?key=${AppConstants.apiKey}';
+      final spreadsheetId = AppConstants.spreadsheetId;
+      final range = '${AppConstants.employeeSheetName}!A1:B';
 
-      // Perform GET request using ApiClient
-      final response = await apiClient.get(url);
-      final jsonData = json.decode(response.body);
+      final response = await sheetsApi.spreadsheets.values.get(spreadsheetId, range);
 
-      if (jsonData['values'] != null) {
+      if (response.values != null) {
         List<EmployeeModel> employeeList = [];
-        List<dynamic> rows = jsonData['values'];
+        List<List<dynamic>> rows = response.values!;
 
         // Skip the header row and iterate through the remaining rows
         for (int i = 1; i < rows.length; i++) {
           var row = rows[i];
           employeeList.add(EmployeeModel(
-            employeeName: row[0]?.toString() ?? '',
-            isActive: row[1]?.toString().toLowerCase() == 'true',
+            employeeName: row[0] ?? '',
+            isActive: row[1] ?? 'false' == 'true',
           ));
         }
 
@@ -47,13 +47,24 @@ class EmployeeRemoteDataSource {
   // Add a new employee record to Google Sheets.
   Future<void> addEmployee(EmployeeModel employee) async {
     try {
-      final url = '${AppConstants.googleSheetApiBaseUrl}/${AppConstants.spreadsheetId}/values/${AppConstants.employeeSheetName}:append?valueInputOption=RAW&key=${AppConstants.apiKey}';
+      final spreadsheetId = AppConstants.spreadsheetId;
+      final range = '${AppConstants.employeeSheetName}!A1:B';
 
-      final Map<String, dynamic> body = {
-        'values': [[employee.employeeName, employee.isActive.toString()]]
-      };
+      final valueRange = ValueRange(
+        range: range,
+        values: [
+          [employee.employeeName, employee.isActive.toString()]
+        ],
+      );
 
-      await apiClient.post(url, json.encode(body)); // Proper JSON Encoding
+      await sheetsApi.spreadsheets.values.append(
+        valueRange,
+        spreadsheetId,
+        '${AppConstants.employeeSheetName}!A1:B',
+        valueInputOption: 'RAW',
+      );
+
+      print("Employee added successfully.");
     } catch (e) {
       throw ServerFailure('Failed to add employee: ${e.toString()}');
     }

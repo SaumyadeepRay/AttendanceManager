@@ -16,7 +16,7 @@ class UpdateAttendance {
     try {
       // Calling repository method to update attendance data.
       await repository.updateAttendance(attendance);
-      return const Right(null); // Returns success without any data on success
+      return Right(null); // Returns success without any data on success
     } catch (e) {
       // Returns failure if an exception occurs.
       return Left(ServerFailure('Failed to update attendance: ${e.toString()}'));

@@ -2,6 +2,7 @@
 // It holds the core business model without any external dependencies.
 
 class Attendance {
+  final String date; // Add a date field
   final String employeeName; // Name of the employee
   final String checkIn; // Check-in time of the employee
   final String checkOut; // Check-out time of the employee
@@ -13,20 +14,23 @@ class Attendance {
     required this.checkIn,
     required this.checkOut,
     required this.status,
+    required this.date, // Initialize date in the constructor
   });
 
-  // Method to create a copy of the Attendance object with updated properties
+  // CopyWith method to update properties
   Attendance copyWith({
     String? employeeName,
     String? checkIn,
     String? checkOut,
     String? status,
+    String? date, // Add date to the copyWith method
   }) {
     return Attendance(
       employeeName: employeeName ?? this.employeeName,
       checkIn: checkIn ?? this.checkIn,
       checkOut: checkOut ?? this.checkOut,
       status: status ?? this.status,
+      date: date ?? this.date, // Set date if provided
     );
   }
 

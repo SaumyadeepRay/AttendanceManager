@@ -15,10 +15,13 @@ class GetAttendance {
   Future<Either<Failure, List<Attendance>>> execute(String date) async {
     try {
       // Fetching attendance records from the repository
-      final result = await repository.fetchAttendance(date);
-      return Right(result); // Returning the list of attendance records on success
+      final attendanceList = await repository.fetchAttendance(date);
+      if (attendanceList.isEmpty) {
+        return Left(ServerFailure('No attendance records found for this date.'));
+      }
+      return Right(attendanceList);
     } catch (e) {
-      return Left(ServerFailure('Failed to fetch attendance: ${e.toString()}')); // Returning failure on exception
+      return Left(ServerFailure('Failed to fetch attendance: ${e.toString()}'));
     }
   }
 }

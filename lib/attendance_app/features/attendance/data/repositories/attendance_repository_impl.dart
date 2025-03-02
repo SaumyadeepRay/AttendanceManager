@@ -30,13 +30,19 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
   @override
   Future<void> updateAttendance(Attendance attendance) async {
     try {
-      // Converts the Attendance entity into AttendanceModel for JSON serialization
-      final attendanceModel = _mapToModel(attendance);
+      final existingAttendances = await fetchAttendance(attendance.date);
+      final exists = existingAttendances.any((a) =>
+      a.employeeName == attendance.employeeName &&
+          a.date == attendance.date
+      );
 
-      // Calls the remote data source to update attendance data
-      await remoteDataSource.updateAttendance(attendanceModel);
+      final model = _mapToModel(attendance);
+      if (exists) {
+        await remoteDataSource.updateAttendance(model); // Update existing row
+      } else {
+        await remoteDataSource.addAttendance(model); // Add new row
+      }
     } catch (e) {
-      // Throws a ServerFailure if any exception occurs
       throw ServerFailure('Failed to update attendance: ${e.toString()}');
     }
   }
@@ -48,6 +54,7 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
       checkIn: attendance.checkIn,
       checkOut: attendance.checkOut,
       status: attendance.status,
+      date: attendance.date,
     );
   }
 
@@ -58,6 +65,7 @@ class AttendanceRepositoryImpl implements AttendanceRepository {
       checkIn: model.checkIn,
       checkOut: model.checkOut,
       status: model.status,
+      date: model.date,
     );
   }
 

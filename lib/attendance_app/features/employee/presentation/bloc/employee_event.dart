@@ -1,9 +1,14 @@
+import 'package:equatable/equatable.dart';
+
 import '../../domain/entities/employee.dart';
 
 // Abstract base class for all employee-related events.
 // Events represent actions that can trigger state changes in the BLoC.
 
-abstract class EmployeeEvent {}
+abstract class EmployeeEvent extends Equatable {
+  @override
+  List<Object> get props => [];
+}
 
 // Event to fetch all employee records.
 // This event is dispatched when the user requests the employee list.
@@ -17,7 +22,7 @@ class AddEmployeeEvent extends EmployeeEvent {
   AddEmployeeEvent(this.employee);
 
   @override
-  List<Object?> get props => [employee]; // Props used for value comparison in tests
+  List<Object> get props => [employee]; // Props used for value comparison in tests
 }
 
 // Event to remove an employee by their name.
@@ -28,5 +33,5 @@ class RemoveEmployeeEvent extends EmployeeEvent {
   RemoveEmployeeEvent(this.employeeName);
 
   @override
-  List<Object?> get props => [employeeName]; // Props used for value comparison in tests
+  List<Object> get props => [employeeName]; // Props used for value comparison in tests
 }

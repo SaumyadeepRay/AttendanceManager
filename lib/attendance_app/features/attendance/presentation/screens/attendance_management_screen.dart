@@ -14,14 +14,17 @@ class AttendanceManagementScreen extends StatefulWidget {
   const AttendanceManagementScreen({Key? key}) : super(key: key);
 
   @override
-  _AttendanceManagementScreenState createState() => _AttendanceManagementScreenState();
+  _AttendanceManagementScreenState createState() =>
+      _AttendanceManagementScreenState();
 }
 
-class _AttendanceManagementScreenState extends State<AttendanceManagementScreen> {
+class _AttendanceManagementScreenState
+    extends State<AttendanceManagementScreen> {
   final TextEditingController employeeNameController = TextEditingController();
   final TextEditingController checkInController = TextEditingController();
   final TextEditingController checkOutController = TextEditingController();
   final TextEditingController statusController = TextEditingController();
+  final TextEditingController dateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +36,18 @@ class _AttendanceManagementScreenState extends State<AttendanceManagementScreen>
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            ReusableTextField(hintText: 'Employee Name', controller: employeeNameController),
+            ReusableTextField(
+                hintText: 'Employee Name', controller: employeeNameController),
             const SizedBox(height: 10),
-            ReusableTextField(hintText: 'Check-In Time', controller: checkInController),
+            ReusableTextField(
+                hintText: 'Check-In Time', controller: checkInController),
             const SizedBox(height: 10),
-            ReusableTextField(hintText: 'Check-Out Time', controller: checkOutController),
+            ReusableTextField(
+                hintText: 'Check-Out Time', controller: checkOutController),
             const SizedBox(height: 10),
             ReusableTextField(hintText: 'Status', controller: statusController),
+            const SizedBox(height: 10),
+            ReusableTextField(hintText: 'Date (e.g., YYYY-MM-DD)', controller: dateController),
             const SizedBox(height: 20),
             BlocConsumer<AttendanceBloc, AttendanceState>(
               listener: (context, state) {
@@ -47,10 +55,12 @@ class _AttendanceManagementScreenState extends State<AttendanceManagementScreen>
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Attendance Updated Successfully!')),
                   );
+                  // Clear the text fields after successful update
                   employeeNameController.clear();
                   checkInController.clear();
                   checkOutController.clear();
                   statusController.clear();
+                  dateController.clear();
                 } else if (state is AttendanceError) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(state.message)),
@@ -69,8 +79,10 @@ class _AttendanceManagementScreenState extends State<AttendanceManagementScreen>
                       checkIn: checkInController.text,
                       checkOut: checkOutController.text,
                       status: statusController.text,
+                      date: dateController.text, // Using the dateController text for the date
                     );
-                    BlocProvider.of<AttendanceBloc>(context).add(UpdateAttendanceEvent(attendance));
+                    BlocProvider.of<AttendanceBloc>(context)
+                        .add(UpdateAttendanceEvent(attendance));
                   },
                 );
               },
@@ -87,6 +99,7 @@ class _AttendanceManagementScreenState extends State<AttendanceManagementScreen>
     checkInController.dispose();
     checkOutController.dispose();
     statusController.dispose();
+    dateController.dispose(); // Dispose of the date controller as well
     super.dispose();
   }
 }

@@ -6,15 +6,17 @@ import '../../domain/entities/attendance.dart';
 class AttendanceModel extends Attendance {
   // Constructor calls the parent constructor with necessary fields.
   AttendanceModel({
-    required String employeeName,
-    required String checkIn,
-    required String checkOut,
-    required String status,
+    required dynamic employeeName,
+    required dynamic checkIn,
+    required dynamic checkOut,
+    required dynamic status,
+    required dynamic date,
   }) : super(
     employeeName: employeeName,
     checkIn: checkIn,
     checkOut: checkOut,
     status: status,
+    date: date,
   );
 
   // Factory method to create an AttendanceModel object from JSON data.
@@ -24,6 +26,7 @@ class AttendanceModel extends Attendance {
       checkIn: json['checkIn'] ?? '', // Check-in time from JSON data
       checkOut: json['checkOut'] ?? '', // Check-out time from JSON data
       status: json['status'] ?? '', // Attendance status from JSON data
+      date: json['date'] ?? '', // Attendance Date from JSON data
     );
   }
 
@@ -34,6 +37,7 @@ class AttendanceModel extends Attendance {
       'checkIn': checkIn, // Check-in time to JSON
       'checkOut': checkOut, // Check-out time to JSON
       'status': status, // Attendance status to JSON
+      'date': date, // Date status to JSON
     };
   }
 }

@@ -1,42 +1,32 @@
-import 'dart:convert';
+import 'package:googleapis/sheets/v4.dart';
 import '../../../../core/errors/failures.dart';
-import '../../../../core/network/api_client.dart';
 import '../../../../core/utils/app_constants.dart';
 import '../../../employee/data/models/employee_model.dart';
+import '../../domain/entities/attendance.dart';
 import '../models/attendance_model.dart';
 
 // This class handles remote data fetching for attendance using Google Sheets API.
 class AttendanceRemoteDataSource {
-  final ApiClient apiClient; // API client for making network requests
+  final SheetsApi sheetsApi;
 
-  AttendanceRemoteDataSource({required this.apiClient});
+  AttendanceRemoteDataSource({required this.sheetsApi});
 
-  // Fetch attendance data from Google Sheets for a given date.
   Future<List<AttendanceModel>> fetchAttendance(String date) async {
     try {
-      // Construct the API URL to fetch attendance data
-      final url = '${AppConstants.googleSheetApiBaseUrl}/${AppConstants.spreadsheetId}/values/${AppConstants.attendanceSheetName}?key=${AppConstants.apiKey}';
-      print("Fetching attendance data from: $url");
+      final spreadsheetId = AppConstants.spreadsheetId;
+      final range = '${AppConstants.attendanceSheetName}!A1:D';
 
-      // Perform GET request using ApiClient
-      final response = await apiClient.get(url);
+      final response = await sheetsApi.spreadsheets.values.get(spreadsheetId, range);
 
-      // Check if the response was successful
-      if (response.statusCode != 200) {
-        throw ServerFailure('Failed to fetch data: ${response.statusCode}');
-      }
-
-      final jsonData = json.decode(response.body);
-
-      if (jsonData['values'] != null) {
+      if (response.values != null) {
         List<AttendanceModel> attendanceList = [];
-        List<dynamic> rows = jsonData['values'];
+        List<List<dynamic>> rows = response.values!;
 
-        // Skip the header row and iterate through the remaining rows
         for (int i = 1; i < rows.length; i++) {
           var row = rows[i];
-          if (row[0] == date) { // Checking if the date matches the requested date
+          if (row[0] == date) {
             attendanceList.add(AttendanceModel(
+              date: row[0] ?? '',
               employeeName: row[1] ?? '',
               checkIn: row[2] ?? '',
               checkOut: row[3] ?? '',
@@ -49,7 +39,7 @@ class AttendanceRemoteDataSource {
           throw ServerFailure('No Attendance Data Found for Selected Date');
         }
 
-        return attendanceList; // Returning list of attendance records
+        return attendanceList;
       } else {
         throw ServerFailure('No attendance data found');
       }
@@ -59,51 +49,87 @@ class AttendanceRemoteDataSource {
     }
   }
 
-  // Update attendance data to Google Sheets
-  Future<void> updateAttendance(AttendanceModel attendance) async {
+  Future<void> updateAttendance(Attendance attendance) async {
     try {
-      final url = '${AppConstants.googleSheetApiBaseUrl}/${AppConstants.spreadsheetId}/values/${AppConstants.attendanceSheetName}:update?valueInputOption=RAW&key=${AppConstants.apiKey}';
-      print("Updating attendance data at: $url");
+      final spreadsheetId = AppConstants.spreadsheetId;
+      final range = '${AppConstants.attendanceSheetName}!A2:D2';
 
-      // Creating JSON payload
-      final Map<String, dynamic> body = {
-        'values': [[attendance.employeeName, attendance.checkIn, attendance.checkOut, attendance.status]]
-      };
+      final valueRange = ValueRange(
+        range: range,
+        values: [
+          [attendance.employeeName, attendance.date, attendance.checkIn, attendance.checkOut]
+        ],
+      );
 
-      // Performing PUT request (for updating)
-      final response = await apiClient.put(url, json.encode(body));
+      await sheetsApi.spreadsheets.values.update(
+        valueRange,
+        spreadsheetId,
+        range,
+        valueInputOption: 'RAW',
+      );
 
-      // Check if response is successful
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw ServerFailure('Failed to update attendance: ${response.body}');
-      }
+      print("Attendance updated successfully.");
     } catch (e) {
       print("Error in updateAttendance: $e");
-      throw ServerFailure('Failed to update attendance: ${e.toString()}');
     }
   }
 
-  // Add employee to Google Sheets
-  Future<void> addEmployee(EmployeeModel employee) async {
+  // Future<void> addEmployee(EmployeeModel employee) async {
+  //   try {
+  //     final spreadsheetId = AppConstants.spreadsheetId;
+  //     final range = '${AppConstants.employeeSheetName}!A1:B';
+  //
+  //     final valueRange = ValueRange(
+  //       range: range,
+  //       values: [
+  //         [employee.employeeName, employee.isActive.toString()]
+  //       ],
+  //     );
+  //
+  //     await sheetsApi.spreadsheets.values.append(
+  //       valueRange,
+  //       spreadsheetId,
+  //       '${AppConstants.employeeSheetName}!A1:B',
+  //       valueInputOption: 'RAW',
+  //     );
+  //
+  //     print("Employee added successfully.");
+  //   } catch (e) {
+  //     print("Error in addEmployee: $e");
+  //   }
+  // }
+
+  // Add this method to AttendanceRemoteDataSource
+
+  Future<void> addAttendance(AttendanceModel attendance) async {
     try {
-      final url = '${AppConstants.googleSheetApiBaseUrl}/${AppConstants.spreadsheetId}/values/${AppConstants.employeeSheetName}:append?valueInputOption=RAW&key=${AppConstants.apiKey}';
-      print("Adding employee to: $url");
+      final spreadsheetId = AppConstants.spreadsheetId;
+      final range = '${AppConstants.attendanceSheetName}!A1:E'; // Adjust range to match your sheet
 
-      final Map<String, dynamic> body = {
-        'values': [[employee.employeeName, employee.isActive.toString()]]
-      };
+      final valueRange = ValueRange(
+        values: [
+          [
+            attendance.date,
+            attendance.employeeName,
+            attendance.checkIn,
+            attendance.checkOut,
+            attendance.status,
+          ]
+        ],
+      );
 
-      print("Request Body: ${json.encode(body)}");
+      await sheetsApi.spreadsheets.values.append(
+        valueRange,
+        spreadsheetId,
+        range,
+        valueInputOption: 'USER_ENTERED',
+      );
 
-      final response = await apiClient.post(url, json.encode(body));
-
-      // Check if the response is successful
-      if (response.statusCode != 200 && response.statusCode != 201) {
-        throw ServerFailure('Failed to add employee: ${response.body}');
-      }
+      print("Attendance added successfully.");
     } catch (e) {
-      print("Error in addEmployee: $e");
-      throw ServerFailure('Failed to add employee: ${e.toString()}');
+      print("Error in addAttendance: $e");
+      throw ServerFailure('Failed to add attendance: ${e.toString()}');
     }
   }
 }
+

@@ -1,9 +1,14 @@
+import 'package:equatable/equatable.dart';
+
 import '../../domain/entities/employee.dart';
 
 // Abstract base class for all employee-related states.
 // States represent the different UI conditions managed by the BLoC.
 
-abstract class EmployeeState {}
+abstract class EmployeeState extends Equatable {
+  @override
+  List<Object> get props => [];
+}
 
 // Initial state when the BLoC is first created.
 // This state indicates no action has been performed yet.
@@ -21,7 +26,7 @@ class EmployeeLoaded extends EmployeeState {
   EmployeeLoaded({required this.employees});
 
   @override
-  List<Object?> get props => [employees]; // Props used for value comparison in tests
+  List<Object> get props => [employees]; // Props used for value comparison in tests
 }
 
 // State when a new employee is successfully added.
@@ -40,5 +45,14 @@ class EmployeeError extends EmployeeState {
   EmployeeError({required this.message});
 
   @override
-  List<Object?> get props => [message]; // Props used for value comparison in tests
+  List<Object> get props => [message]; // Props used for value comparison in tests
+}
+
+class EmployeeSuccess extends EmployeeState {
+  final String message;
+
+  EmployeeSuccess({required this.message});
+
+  @override
+  List<Object> get props => [message];
 }
