@@ -14,36 +14,42 @@ class AttendanceBloc extends Bloc<AttendanceEvent, AttendanceState> {
     required this.getAttendance,
     required this.updateAttendance,
   }) : super(AttendanceInitial()) {
-    on<FetchAttendanceEvent>((event, emit) async {
-      emit(AttendanceLoading());
-      final result = await getAttendance.execute(event.date);
+    on<FetchAttendanceEvent>(_onFetchAttendance);
+    on<UpdateAttendanceEvent>(_onUpdateAttendance);
+  }
 
-      result.fold(
-            (failure) => emit(AttendanceError(message: _mapFailureToMessage(failure))),
-            (attendanceList) => emit(AttendanceLoaded(attendances: attendanceList)),
-      );
-    });
+  Future<void> _onFetchAttendance(
+      FetchAttendanceEvent event, Emitter<AttendanceState> emit) async {
+    emit(AttendanceLoading());
+    final result = await getAttendance.execute(event.date);
 
-    on<UpdateAttendanceEvent>((event, emit) async {
-      emit(AttendanceLoading());
-      final result = await updateAttendance.execute(event.attendance);
+    result.fold(
+          (failure) => emit(AttendanceError(message: _mapFailureToMessage(failure))),
+          (attendanceList) => emit(AttendanceLoaded(attendances: attendanceList)),
+    );
+  }
 
-      result.fold(
-            (failure) => emit(AttendanceError(message: _mapFailureToMessage(failure))),
-            (_) => emit(AttendanceUpdated()), // Emit only a success signal
-      );
-    });
+  Future<void> _onUpdateAttendance(
+      UpdateAttendanceEvent event, Emitter<AttendanceState> emit) async {
+    emit(AttendanceLoading());
+    final result = await updateAttendance.execute(event.attendance);
+
+    result.fold(
+          (failure) => emit(AttendanceError(message: _mapFailureToMessage(failure))),
+          (_) => emit(AttendanceUpdated()),
+    );
   }
 
   String _mapFailureToMessage(Failure failure) {
-    if (failure is ServerFailure) {
-      print('Server failure details: ${failure.toString()}');
-      return 'Failed to fetch data. Please try again!';
-    } else if (failure is CacheFailure) {
-      return 'Cache Error! Please refresh the page.';
-    } else if (failure is ValidationFailure) {
-      return 'Invalid input! Please check your data.';
+    switch (failure.runtimeType) {
+      case ServerFailure:
+        return 'Failed to fetch data. Please try again!';
+      case CacheFailure:
+        return 'Cache Error! Please refresh the page.';
+      case ValidationFailure:
+        return 'Invalid input! Please check your data.';
+      default:
+        return 'Unexpected Error Occurred!';
     }
-    return 'Unexpected Error Occurred!';
   }
 }

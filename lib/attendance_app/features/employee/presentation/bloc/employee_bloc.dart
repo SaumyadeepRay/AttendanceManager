@@ -16,32 +16,37 @@ class EmployeeBloc extends Bloc<EmployeeEvent, EmployeeState> {
     required this.addEmployee,
     required this.removeEmployee,
   }) : super(EmployeeInitial()) {
-    on<FetchEmployeesEvent>((event, emit) async {
-      emit(EmployeeLoading());
-      final result = await getEmployees.execute();
-      result.fold(
-            (failure) => emit(EmployeeError(message: _mapFailureToMessage(failure))),
-            (employeeList) => emit(EmployeeLoaded(employees: employeeList)),
-      );
-    });
+    on<FetchEmployeesEvent>(_onFetchEmployees);
+    on<AddEmployeeEvent>(_onAddEmployee);
+    on<RemoveEmployeeEvent>(_onRemoveEmployee);
+  }
 
-    on<AddEmployeeEvent>((event, emit) async {
-      emit(EmployeeLoading());
-      final result = await addEmployee.execute(event.employee);
-      result.fold(
-            (failure) => emit(EmployeeError(message: _mapFailureToMessage(failure))),
-            (_) => add(FetchEmployeesEvent()),
-      );
-    });
+  Future<void> _onFetchEmployees(
+      FetchEmployeesEvent event, Emitter<EmployeeState> emit) async {
+    emit(EmployeeLoading());
+    final result = await getEmployees.execute();
+    result.fold(
+          (failure) => emit(EmployeeError(message: _mapFailureToMessage(failure))),
+          (employeeList) => emit(EmployeeLoaded(employees: employeeList)),
+    );
+  }
 
-    on<RemoveEmployeeEvent>((event, emit) async {
-      emit(EmployeeLoading());
-      final result = await removeEmployee.execute(event.employeeName);
-      result.fold(
-            (failure) => emit(EmployeeError(message: _mapFailureToMessage(failure))),
-            (_) => add(FetchEmployeesEvent()),
-      );
-    });
+  Future<void> _onAddEmployee(
+      AddEmployeeEvent event, Emitter<EmployeeState> emit) async {
+    final result = await addEmployee.execute(event.employee);
+    result.fold(
+          (failure) => emit(EmployeeError(message: _mapFailureToMessage(failure))),
+          (_) => emit(EmployeeSuccess(message: 'Employee Added Successfully!')),
+    );
+  }
+
+  Future<void> _onRemoveEmployee(
+      RemoveEmployeeEvent event, Emitter<EmployeeState> emit) async {
+    final result = await removeEmployee.execute(event.employeeName);
+    result.fold(
+          (failure) => emit(EmployeeError(message: _mapFailureToMessage(failure))),
+          (_) => emit(EmployeeSuccess(message: 'Employee Removed Successfully!')),
+    );
   }
 
   String _mapFailureToMessage(Failure failure) {

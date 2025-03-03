@@ -34,28 +34,8 @@ class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
           ),
         )
         .where((attendance) => attendance.date == date)
-        .toList(); // Filter Yahan Lagaya
+        .toList(); // Filter
   }
-
-  // @override
-  // Future<void> addEmployee(EmployeeModel employee) async {
-  //   // Implementation for adding employee
-  //   try {
-  //     var valueRange = ValueRange()
-  //       ..values = [
-  //         [employee.employeeName, employee.isActive]
-  //       ];
-  //
-  //     await sheetsApi?.spreadsheets.values.append(
-  //       valueRange,
-  //       _spreadsheetId,
-  //       'Employees!A2:D',
-  //       valueInputOption: 'RAW',
-  //     );
-  //   } catch (e) {
-  //     throw Exception('Failed to add employee: $e');
-  //   }
-  // }
 
   @override
   Future<void> updateAttendance(Attendance attendance) async {
@@ -95,11 +75,11 @@ class AttendanceRemoteDataSourceImpl implements AttendanceRemoteDataSource {
       for (int i = 0; i < rows.length; i++) {
         String sheetDate = rows[i][0].toString().trim();
         if (sheetDate == date.trim()) {
-          return i + 2; // +2 kyunki A2 se start kiya tha range
+          return i + 2; // Range started from A2
         }
       }
     }
-    return -1; // Yahan pe -1 de raha hai jab koi date nahi mil rahi
+    return -1; // When Data is not present
   }
 
   @override

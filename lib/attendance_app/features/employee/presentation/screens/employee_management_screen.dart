@@ -6,9 +6,8 @@ import '../bloc/employee_bloc.dart';
 import '../../domain/entities/employee.dart';
 import '../bloc/employee_event.dart';
 import '../bloc/employee_state.dart';
+import '../widgets/employee_card.dart';
 
-// EmployeeManagementScreen allows admins to add or remove employees.
-// It provides input fields and action buttons to manage employee data.
 class EmployeeManagementScreen extends StatefulWidget {
   const EmployeeManagementScreen({Key? key}) : super(key: key);
 
@@ -18,21 +17,64 @@ class EmployeeManagementScreen extends StatefulWidget {
 
 class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
   final TextEditingController employeeNameController = TextEditingController();
+  String? removingEmployeeName;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      BlocProvider.of<EmployeeBloc>(context).add(FetchEmployeesEvent());
+      context.read<EmployeeBloc>().add(FetchEmployeesEvent());
     });
+  }
+
+  void _addEmployee() {
+    final String employeeName = employeeNameController.text.trim();
+    if (employeeName.isEmpty) {
+      _showSnackbar('Please enter an employee name');
+      return;
+    }
+
+    final employeeBloc = context.read<EmployeeBloc>();
+    final currentState = employeeBloc.state;
+
+    if (currentState is EmployeeLoaded &&
+        currentState.employees.any(
+              (e) => e.employeeName.toLowerCase() == employeeName.toLowerCase(),
+        )) {
+      _showSnackbar('Employee already exists!');
+      return;
+    }
+
+    employeeBloc.add(
+      AddEmployeeEvent(Employee(employeeName: employeeName, isActive: true)),
+    );
+
+    // Ensure UI updates properly after adding
+    setState(() {
+      removingEmployeeName = null; // Reset remove state
+    });
+  }
+
+  void _removeEmployee(String employeeName) {
+    setState(() => removingEmployeeName = employeeName);
+    context.read<EmployeeBloc>().add(RemoveEmployeeEvent(employeeName));
+
+    // Ensure UI updates properly after removing
+    setState(() {
+      removingEmployeeName = null;
+    });
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Employee Management'),
-      ),
+      appBar: AppBar(title: const Text('Employee Management')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -42,41 +84,18 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
               controller: employeeNameController,
             ),
             const SizedBox(height: 10),
-            ReusableButton(
-              label: 'Add Employee',
-              onPressed: () {
-                if (employeeNameController.text.isNotEmpty) {
-                  final employee = Employee(
-                    employeeName: employeeNameController.text,
-                    isActive: true,
-                  );
-                  BlocProvider.of<EmployeeBloc>(context).add(AddEmployeeEvent(employee));
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter an employee name')),
-                  );
-                }
-              },
-            ),
+            ReusableButton(label: 'Add Employee', onPressed: _addEmployee),
             const SizedBox(height: 20),
             Expanded(
               child: BlocConsumer<EmployeeBloc, EmployeeState>(
                 listener: (context, state) {
-                  if (state is EmployeeAdded) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Employee Added Successfully!')),
-                    );
+                  if (state is EmployeeSuccess) {
+                    _showSnackbar(state.message);
                     employeeNameController.clear();
-                    BlocProvider.of<EmployeeBloc>(context).add(FetchEmployeesEvent());
-                  } else if (state is EmployeeRemoved) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Employee Removed Successfully!')),
-                    );
-                    BlocProvider.of<EmployeeBloc>(context).add(FetchEmployeesEvent());
+                    context.read<EmployeeBloc>().add(FetchEmployeesEvent());
                   } else if (state is EmployeeError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message)),
-                    );
+                    _showSnackbar(state.message);
+                    setState(() => removingEmployeeName = null);
                   }
                 },
                 builder: (context, state) {
@@ -90,14 +109,11 @@ class _EmployeeManagementScreenState extends State<EmployeeManagementScreen> {
                       itemCount: state.employees.length,
                       itemBuilder: (context, index) {
                         final employee = state.employees[index];
-                        return ListTile(
-                          title: Text(employee.employeeName),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            onPressed: () {
-                              BlocProvider.of<EmployeeBloc>(context).add(RemoveEmployeeEvent(employee.employeeName));
-                            },
-                          ),
+                        return EmployeeCard(
+                          employee: employee,
+                          onRemove: removingEmployeeName == employee.employeeName
+                              ? null
+                              : () => _removeEmployee(employee.employeeName),
                         );
                       },
                     );

@@ -8,6 +8,7 @@ import '../../domain/entities/attendance.dart';
 import '../bloc/attendance_event.dart';
 import '../bloc/attendance_state.dart';
 import 'package:intl/intl.dart';
+import '../widgets/attendance_list_item.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -67,11 +68,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Time picker function for selecting check-in and check-out times
   Future<void> _selectTime(
-    BuildContext context,
-    TextEditingController controller,
-    Function setStateDialog,
-    Function setStateParent,
-  ) async {
+      BuildContext context,
+      TextEditingController controller,
+      Function setStateDialog,
+      Function setStateParent,
+      ) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
@@ -93,17 +94,48 @@ class _HomeScreenState extends State<HomeScreen> {
   // Method to save the attendance
   Future<void> _saveAttendance(BuildContext context) async {
     if (_isFormValid()) {
-      final newAttendance = Attendance(
-        date: datePopupController.text,
-        employeeName: employeeNameController.text,
-        checkIn: checkInController.text,
-        checkOut: checkOutController.text,
-        status: 'Present',
-      );
+      // Fetch the current state to check if the attendance already exists
+      final attendanceState = BlocProvider.of<AttendanceBloc>(context).state;
 
-      BlocProvider.of<AttendanceBloc>(
-        context,
-      ).add(UpdateAttendanceEvent(newAttendance));
+      Attendance? existingAttendance;
+
+      if (attendanceState is AttendanceLoaded) {
+        existingAttendance = attendanceState.attendances.firstWhere(
+              (att) =>
+          att.employeeName == employeeNameController.text &&
+              att.date == datePopupController.text,
+          orElse: () => Attendance(
+            date: '', employeeName: '', checkIn: '', checkOut: '', status: '',
+          ),
+        );
+      }
+
+      // Check if we found an existing attendance
+      if (existingAttendance!.date.isNotEmpty) {
+        // Update the existing attendance
+        final updatedAttendance = Attendance(
+          date: datePopupController.text,
+          employeeName: employeeNameController.text,
+          checkIn: checkInController.text,
+          checkOut: checkOutController.text,
+          status: 'Present',
+        );
+
+        BlocProvider.of<AttendanceBloc>(context)
+            .add(UpdateAttendanceEvent(updatedAttendance));
+      } else {
+        // Create a new attendance if no match is found
+        final newAttendance = Attendance(
+          date: datePopupController.text,
+          employeeName: employeeNameController.text,
+          checkIn: checkInController.text,
+          checkOut: checkOutController.text,
+          status: 'Present',
+        );
+
+        BlocProvider.of<AttendanceBloc>(context)
+            .add(UpdateAttendanceEvent(newAttendance));
+      }
 
       // Clear Form Fields After Saving
       employeeNameController.clear();
@@ -232,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 TextButton(
                   onPressed:
-                      _isFormValid() ? () => _saveAttendance(context) : null,
+                  _isFormValid() ? () => _saveAttendance(context) : null,
                   child: const Text('Save'),
                 ),
               ],
@@ -332,6 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               const SizedBox(height: 20),
+
               Expanded(
                 child: BlocBuilder<AttendanceBloc, AttendanceState>(
                   builder: (context, state) {
@@ -343,18 +376,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: state.attendances.length,
                         itemBuilder: (context, index) {
                           Attendance attendance = state.attendances[index];
-                          String overtime = calculateOvertime(
-                            attendance.checkIn,
-                            attendance.checkOut,
-                          );
-                          return Card(
-                            child: ListTile(
-                              title: Text(attendance.employeeName),
-                              subtitle: Text(
-                                'Check-In: ${attendance.checkIn}, Check-Out: ${attendance.checkOut}, Overtime: $overtime',
-                              ),
-                              trailing: Text(attendance.status),
-                            ),
+                          return AttendanceListItem(
+                            attendance: attendance,
+                            onUpdate: () {
+                              employeeNameController.text = attendance.employeeName;
+                              datePopupController.text = attendance.date;
+                              checkInController.text = attendance.checkIn;
+                              checkOutController.text = attendance.checkOut;
+                              _updateAttendance(context);
+                            },
                           );
                         },
                       );

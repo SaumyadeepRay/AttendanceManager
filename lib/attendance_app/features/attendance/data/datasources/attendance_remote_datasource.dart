@@ -1,7 +1,6 @@
 import 'package:googleapis/sheets/v4.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/utils/app_constants.dart';
-import '../../../employee/data/models/employee_model.dart';
 import '../../domain/entities/attendance.dart';
 import '../models/attendance_model.dart';
 
@@ -73,33 +72,6 @@ class AttendanceRemoteDataSource {
       print("Error in updateAttendance: $e");
     }
   }
-
-  // Future<void> addEmployee(EmployeeModel employee) async {
-  //   try {
-  //     final spreadsheetId = AppConstants.spreadsheetId;
-  //     final range = '${AppConstants.employeeSheetName}!A1:B';
-  //
-  //     final valueRange = ValueRange(
-  //       range: range,
-  //       values: [
-  //         [employee.employeeName, employee.isActive.toString()]
-  //       ],
-  //     );
-  //
-  //     await sheetsApi.spreadsheets.values.append(
-  //       valueRange,
-  //       spreadsheetId,
-  //       '${AppConstants.employeeSheetName}!A1:B',
-  //       valueInputOption: 'RAW',
-  //     );
-  //
-  //     print("Employee added successfully.");
-  //   } catch (e) {
-  //     print("Error in addEmployee: $e");
-  //   }
-  // }
-
-  // Add this method to AttendanceRemoteDataSource
 
   Future<void> addAttendance(AttendanceModel attendance) async {
     try {

@@ -23,17 +23,17 @@ import '../utils/app_constants.dart';
 
 class ServiceAccount {
   static const credentials = {
-    "type": "service_account",
-    "project_id": "attendance-manager-task",
-    "private_key_id": "4bb9c6ccec3d66d18c4dff9adacfe26d6afbe11e",
-    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC+jx/X6HK3yM5K\nFYVglIAttC4zESjkGyrEH1Ehilx6eD9pWwfowOP6V9zoEEXHPpUO4D204px0KbGY\nVKYLpDbnEZDcQQtk1SBYCLGgR+tXM/JXgICdXXIRl+2hfbRRjGlGkYubtA2Pib9B\nt/j0NSVzh/GwVv2UYbLQaDReALisZWlfCCrhFrcjY0yrj/vSMQa5nbu0/ET0o934\nClTnDQqMry0eeHYxCQWl0U7vCIKUK8/G2eL3Ugj6oNFhfmb0jRLrBwxCMw8u6r78\nl9iaRACQFs8320ArEe9IhGD4onbuPBkApnvChV2HIaxwabncI2Tfewut1TitC4Zg\nWuMmj6eRAgMBAAECggEABMJ4izUYsfFZoTk1w1R8OeAEcCU5ZC6vSBYn6a59+jdh\nDpet7DTusNLjXzbCVmxgTt6AHhGzspVUxLM3EUb/EdETESRNBX4LDHXdoW0wcjV3\ng/LfS4bxLaIxxtkH4SpQmhkSL4+9D7jzInAm30spSgAjE9ptY6iXzbuvlKpAEpq8\nEP3pcg5a9DFonQJaWCvYA73rmwSUot7jpqms8TsPE6OubROYpSVfOZe3K6nzOkcx\n32hR/ht/Q8FvgScgzvPVFKCL+p8QH1wyszgkEsG2NScZ8nTMTn9HsNjK3ShvhFq0\ncUDGao93cO3uGPcMd0s0QjkyjWowqqRLlFNjpcr74QKBgQDfCfLpKsniPbNc5Etm\n7yCrtxyZU4tkRQvQVCs1gG8YKKIlZxxaboB17NbT/DAEVkQu9RUtsMLBS1dACwD0\nkuJa/GvOQ7nMpax3HRnQdF1RI/Y20zDzU/LH4+i4bOQhdw1r0s7cYKlHkSYHfuio\nqyLcADKBVFuN/4aCaQeyNcgbYQKBgQDauGTR5ge0s+YO5Komc9xqNIysHuM5JsJD\n6zFbfRkJONZVGToUHhjNWHnPBGGsbdSudUrbbSuDgNjyMpZvpFDRkRXGv//OBzG9\nmTNUX+qKuynMAKejt6n/mfCEAeDZWrlMfO5/Vp40QhEuybMfY4xHtUoysfQva5P5\niZpfRZSqMQKBgQCEktpTZD6p/vjdT0nOfncR+n7CWJlzWWNDSrSAUb43QvfWeaqt\nyh8LeWLckHtOKKTQsJcNGJM65/iNtby0o5ZudLnz2efXz+Zqyt5sPK63K0QPpIrl\nJ9IYpMzQytDzX1uX6q9Q6RfV1V4geHv8vfSzhl5+51CgX/FpFNshP7yZIQKBgQCz\nGj/k6brxrEb9dx4l8sZRacqvv3NN/4Eg4N1AD8aKmLJaaRf4FVU2AfdtICdjbWS1\nn3K3EESLoN0GJ4qszR8pHOd6Iws0CQwgN+2icBC9ndnyJa8hD2rz1XjwgCFBm1sV\nWVBrkeBm5prvd1doorniln+116cflbZMpvN0hKPiYQKBgCbObPpWI3OXPV8bi1Qn\nhfvP4IjAd1qmajJHCCm4DHwzViWzEc60acSTkBHb/GFOSeApavF+i/s5H4HJqlFt\nxm654E51hlMQAuQbc3tPELRzxuBBj9AoE3woX2pa1RHxHdagqlPXOPH4+2euefCs\nqGUtgdSloQ5scDfuDDyWWDZ3\n-----END PRIVATE KEY-----\n",
-    "client_email": "attendance-manager@attendance-manager-task.iam.gserviceaccount.com",
-    "client_id": "113886396371258873420",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/attendance-manager%40attendance-manager-task.iam.gserviceaccount.com",
-    "universe_domain": "googleapis.com"
+    // "type": "service_account",
+    // "project_id": "attendance-manager-task",
+    // "private_key_id": "30451ce0e16277c7be2135203a0c286f0be6e326",
+    // "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDKzUAdLLs5709K\n7RXlYSlfUv/t40fMJ3UTWYLSf/DFZwvsHAkT72LBrkvJdw4BcyDYYd8SNpJplp2U\nud7uxeggv7RGJr4GrX6ChLREyTiGeFyPiRBaS51zmvE9QQLagGqHdXHzecLAUUFy\neqKnAloCPwgug9Dox/FpiHxVpBQ7KkV47KKYXQiy1uM88ZLrzeaxfxS0M5MKXFio\nzgifjzVKUDukL7jElqCt3fnuLW20IDNmLazYdT4M+VPm8skpQDIoBquQWonRicLa\nLjTaS299isE5Y5sQ3s1aYNXfPHI/qpUfZTNC6QPJbp4nhk0hrKpZ8RgFSNAn7sN1\nz3ZMyGT9AgMBAAECggEADcFrhe8SADwzPSW3NI+Nx3vMhOaxaMrnffBIjkIomfn5\n+q/IaP0+zhNKx2Vpq20TLOWKja2hfIytHSZPwxNSZpbTU/lcCY/FueNTHgZvI7hj\nQI+vXFZAy2XNihq5ZlMd7894l4vKXWSg9+AS3Yb1hT/pYzpNf7kcHHGX3fARyvCU\nUM4h6I4EaHoJs4hwjONu52CRlzqx3bUxaSUX80PcQ1ZLUrJU63q3jO2Wy+wWMh/e\nY6/BJxB56GrRAG9r+uhoc0MslhVmL5Y0vsmC/lHObbVHEvcETMJjp4jp1Cns8vVf\nvcy8XoUcBf653IN5ftRDXRAn8T5qA6HRG/ALDAt34wKBgQDxvMZVQPHXIL6HG3rD\n7SqciZ5kHmlUSLIHBv27SbXhX4LoQRf0iM7MagyNTmzQUFXO4LXL1QEw2HtGBCa5\n27dhM6THasocFiB4YZ5hyfIgtIOJXdpjqt8LFCxXo4hWSQ7ujRyqHIsoYD6zb19P\nAHGePSBimHmVG6FU8cdeBDw4swKBgQDWxGNSqXGMEMaXpVuSaWHEr3NHYCtrME8N\nbAMTFknm/7yhwVrMecSzfOLHZLvELlS8ReWlhnNsfm7s0aGnWbAyBm8OHGRJbS50\ntq/Ieh3B+hEKpuGSsyJVle4wCbipG0+vpwReQ3No4gvJkyfzXRF5ATZJ+NCjm7pS\nD1IelqrjjwKBgQC9QpzNNpGhamOBCASvzMll0WEO5bh1Yozvb4vLzEP39X1aNUx6\nCXpPFGBLabFLzvm/hLMQqO3LvlGVWb6wGNOT6IkEEBm4r6IwXc1QpnlJHcs2CyLm\nkWsbE2o8Gy6sz3o/Tn+4t6xDqkas2W93PNO3ngfy6YmXMhC3nqwGca5sfQKBgDIG\n+SPuOHbqCXiVmikWxyFrxSyhKDwFusRjnqu5i2l1tNjxE1eCHeG5e5H60wo1yKM6\nnO3bzdM9+FTN2BwFdleQzBm7X1kDR8kELRpD596hg4q5qN3lQGAzVpJ2ET/DDuLZ\nwti6WY3a6egAkVPNIB7Ru3Wrsd4KjnJDA1wAuLndAoGBALdKG0vfUHzojxMp6E+a\n41u5hITktYDB9i2VY1NZ6hsXIFOV0RA/rYLNzPsP9LwpXujrn1E/HqwKXMaD65Q7\nhrWgbBwdeIP1lcoD6EKZ1l7zw/suRRz3HwtXNW34OWVqbA/lhWAt98DvHycmJquZ\nzyRyj2684dhsjzNTRC2stsnc\n-----END PRIVATE KEY-----\n",
+    // "client_email": "attendance-manager@attendance-manager-task.iam.gserviceaccount.com",
+    // "client_id": "113886396371258873420",
+    // "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    // "token_uri": "https://oauth2.googleapis.com/token",
+    // "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    // "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/attendance-manager%40attendance-manager-task.iam.gserviceaccount.com",
+    // "universe_domain": "googleapis.com"
   };
 }
 
@@ -82,8 +82,10 @@ Future<void> init() async {
     () => EmployeeRemoteDataSourceImpl(sheetsApi: sl()),
   );
   sl.registerLazySingleton<EmployeeRepository>(
-    () => EmployeeRepositoryImpl(
-      remoteDataSource: sl(),
+        () => EmployeeRepositoryImpl(
+      sl<SheetsApi>(),               // Inject SheetsApi
+      AppConstants.spreadsheetId,    // Inject spreadsheet ID
+      remoteDataSource: sl<EmployeeRemoteDataSource>(),
     ),
   );
   sl.registerLazySingleton<GetEmployees>(
@@ -125,19 +127,3 @@ GSheetInit() async {
   gSheetCrudUserDetails = await gSheetController.worksheetByTitle('Attendance');
   gSheetEmployeesDetails = await gSheetController.worksheetByTitle('Employees');
 }
-
-// Future<SheetsApi> getSheetsApi() async {
-//   final _scopes = [SheetsApi.spreadsheetsScope];
-//
-//   var client = await clientViaUserConsent(
-//     ClientId('814341164557-jid8mto7sdoh4b5a26gjbcbtgr1lgohm.apps.googleusercontent.com', ''),
-//     _scopes,
-//     (url) {
-//       print('Please visit the following URL to authenticate:');
-//       print('  => $url');
-//       print('');
-//     },
-//   );
-//
-//   return SheetsApi(client);
-// }

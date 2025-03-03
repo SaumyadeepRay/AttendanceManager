@@ -1,8 +1,4 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:googleapis/sheets/v4.dart';
-import '../../features/attendance/domain/entities/attendance.dart';
-import '../errors/failures.dart';
 
 // ApiClient class is responsible for making network requests using the HTTP package.
 // This class is reusable across the entire app for all network-related requests.
